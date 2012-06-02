@@ -1,0 +1,87 @@
+/**
+ * build.gradle declares basic dependencies
+ */
+apply plugin: 'java'
+apply plugin: 'gae'
+
+def javaCompatilibity = 1.6
+sourceCompatibility = javaCompatilibity
+targetCompatibility = javaCompatilibity
+
+def encoding = { it.encoding = 'UTF-8'}
+tasks.withType(AbstractCompile) each { encoding it.options }
+
+def gaeVersion = '1.6.4'
+def slim3Version = '1.0.15'
+
+configurations {
+	slim3util
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        mavenRepo(url: 'http://maven.seasar.org/maven2/')
+        add(new org.apache.ivy.plugins.resolver.URLResolver()) {
+            name = 'GitHub'
+            addArtifactPattern 'http://cloud.github.com/downloads/[organisation]/[module]/[module]-[revision].[ext]'
+        }
+    }
+
+    // TODO: use declared above version string i.e. $slim3Version, $gaeVersion
+    dependencies {
+        classpath 'bmuschko:gradle-gae-plugin:0.6'
+        classpath ('org.slim3:slim3-gen:1.0.15') {
+            exclude group: 'org.apache.ant', module: 'ant'
+            exclude group: 'com.sun', module: 'tools'
+        }
+        classpath "com.google.appengine:appengine-tools-sdk:1.6.4"
+    }
+}
+
+repositories {
+    mavenCentral()
+    mavenRepo(url: 'http://maven.seasar.org/maven2/')
+}
+
+dependencies {
+    compile 'javax.servlet:servlet-api:2.5'
+    compile 'javax.servlet:jsp-api:2.0'
+    compile "com.google.appengine:appengine-api-1.0-sdk:$gaeVersion"
+    compile "com.google.appengine:appengine-api-labs:$gaeVersion"
+    compile ("org.slim3:slim3:$slim3Version") {
+        exclude group: 'com.google.appengine', module: 'appengine-api-1.0-sdk'
+    }
+    compile 'org.twitter4j:twitter4j-core:2.2.5'
+    compile 'commons-lang:commons-lang:2.6'
+
+    testCompile 'org.mockito:mockito-core:1.9.0'
+    testCompile 'junit:junit:4.10'
+    testCompile "com.google.appengine:appengine-api-stubs:$gaeVersion"
+    testCompile "com.google.appengine:appengine-testing:$gaeVersion"
+
+    slim3util ("org.slim3:slim3:$slim3Version") {
+        exclude group: 'com.google.appengine', module: 'appengine-api-1.0-sdk'
+    }
+    slim3util ("org.slim3:slim3-gen:$slim3Version") {
+        exclude group: 'org.apache.ant', module: 'ant'
+        exclude group: 'com.sun', module: 'tools'
+    }
+
+    gaeSdk "com.google.appengine:appengine-java-sdk:$gaeVersion"
+}
+
+gae {
+    appcfg {
+        email = 'murai.ry@gmail.com'
+        passIn = true
+    }
+    
+    downloadSdk = true
+    System.properties['appengine.sdk.root'] = gaeDownloadSdk.explodedSdkDirectory.getPath() + File.separator + "appengine-java-sdk-$gaeVersion"
+}
+
+task copySlim3Libs(type: Copy) {
+	from configurations.slim3util
+	into 'build/slim3libs'
+}
