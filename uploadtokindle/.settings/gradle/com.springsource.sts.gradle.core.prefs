@@ -1,3 +1,4 @@
 #com.springsource.sts.gradle.core.preferences.GradleProjectPreferences
-#Sat Jun 02 15:24:20 JST 2012
+#Sat Jun 02 22:23:26 JST 2012
+com.springsource.sts.gradle.classpath.enableSorting=false
 com.springsource.sts.gradle.rootprojectloc=
