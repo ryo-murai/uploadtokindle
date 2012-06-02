@@ -1,4 +1,4 @@
-package org.ry0mry.sendtokindle.controller;
+package org.ry0mry.uploadtokindle.controller;
 
 import org.slim3.controller.Controller;
 import org.slim3.controller.Navigation;
