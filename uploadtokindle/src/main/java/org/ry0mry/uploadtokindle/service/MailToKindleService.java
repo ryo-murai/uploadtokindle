@@ -1,36 +1,27 @@
 package org.ry0mry.uploadtokindle.service;
 
-import java.util.Properties;
+import java.io.IOException;
 
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
+import com.google.appengine.api.mail.MailService;
+import com.google.appengine.api.mail.MailServiceFactory;
 
 public class MailToKindleService {
-	public void mailDocument(String fromAddress, String toAddress, byte[] document, boolean convertOption) throws MessagingException {
-		Session session = Session.getDefaultInstance(new Properties());
 
-		Message message = new MimeMessage(session);
-		message.setFrom(new InternetAddress(fromAddress));
-		message.addRecipient(Message.RecipientType.TO, new InternetAddress(toAddress));
-		
-		Multipart multipart = new MimeMultipart();
-		MimeBodyPart bodyPart = new MimeBodyPart();
-		bodyPart.setText(convertOption ? "convert" : "", "utf-8");
-		multipart.addBodyPart(bodyPart);
+	private final MailService mailService;
 
-		MimeBodyPart attachement = new MimeBodyPart();
-		attachement.setContent(document, "application/zip");
-		multipart.addBodyPart(attachement);
+	public MailToKindleService() {
+		this(MailServiceFactory.getMailService());
+	}
+
+	public MailToKindleService(MailService mailService) {
+		this.mailService = mailService;
+	}
+
+	public void mailDocument(String fromAddress, String toAddress, String fileName, byte[] document, boolean converterOption) throws IOException {
+		MailService.Message message = 
+				new MailService.Message(fromAddress, toAddress, converterOption ? "convert" : "", "");
+		message.setAttachments(new MailService.Attachment(fileName, document));
 		
-		message.setContent(multipart);
-		
-		Transport.send(message);
+		this.mailService.send(message);
 	}
 }
