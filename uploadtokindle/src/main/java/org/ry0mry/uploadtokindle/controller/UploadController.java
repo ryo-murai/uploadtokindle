@@ -33,7 +33,7 @@ public class UploadController extends Controller {
     		
     		String sender = props.getProperty("mail.sender");
     		String recipient = props.getProperty("mail.recipient");
-			logger.info("to mail " + fileItem.getFileName() + " from " + sender + " to " + recipient);
+			logger.fine("to mail " + fileItem.getFileName() + " from " + sender + " to " + recipient);
     		
     		this.toKindleService.mailDocument(
     				sender, 

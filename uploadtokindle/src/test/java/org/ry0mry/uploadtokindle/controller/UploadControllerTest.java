@@ -9,10 +9,11 @@ public class UploadControllerTest extends ControllerTestCase {
 
     @Test
     public void run() throws Exception {
+    	// test get
         tester.start("/upload");
         UploadController controller = tester.getController();
         assertThat(controller, is(notNullValue()));
         assertThat(tester.isRedirect(), is(false));
-        assertThat(tester.getDestinationPath(), is(nullValue()));
+        assertThat(tester.getDestinationPath(), is("/index.htm"));
     }
 }
