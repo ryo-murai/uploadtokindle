@@ -33,10 +33,6 @@ public class UploadController extends Controller {
 
 	@Override
     public Navigation run() throws Exception {
-		if(!this.userService.isUserLoggedIn()) {
-			return redirect(this.userService.createLoginURL(this.request.getRequestURI()));
-		}
-
 		if(this.isPost()) {
     		FileItem fileItem = requestScope("file");
     		String convert = requestScope("convert");

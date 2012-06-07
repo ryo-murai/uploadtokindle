@@ -23,8 +23,9 @@ public class UploadUserDao {
 			if(!user.getEmail().equals(sender)) {
 				return null;
 			}
-			
-			uploadUser.setUploadDestAddress(recipient);
+			String[] split = recipient.split("@");
+			uploadUser.setUploadDestAddress(split[0]);
+			uploadUser.setAddrType(UploadUser.KindleAddrType.KINDOLECOM);
 			uploadUser.setUser(user);
 			
 			return uploadUser;

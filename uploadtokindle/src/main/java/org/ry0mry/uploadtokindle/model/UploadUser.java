@@ -10,6 +10,22 @@ import org.slim3.datastore.Model;
 
 @Model(schemaVersion = 1)
 public class UploadUser implements Serializable {
+	
+	public enum KindleAddrType {
+		KINDOLECOM("kindle.com"),
+		FREEKINDLECOM("free.kindle.com");
+		
+		private final String domainAddress;
+		private KindleAddrType(String domainAddress) {
+			this.domainAddress = domainAddress;
+		}
+		public String getDomainAddress() {
+			return domainAddress;
+		}
+		public String getActualEmailAddress(String account) {
+			return account + "@" + this.domainAddress;
+		}
+	}
 
     private static final long serialVersionUID = 1L;
 
@@ -22,6 +38,8 @@ public class UploadUser implements Serializable {
     private User user;
     
     private String uploadDestAddress;
+    
+    private KindleAddrType addrType;
     
     /**
      * Returns the key.
@@ -75,6 +93,14 @@ public class UploadUser implements Serializable {
 
 	public void setUploadDestAddress(String uploadDestAddress) {
 		this.uploadDestAddress = uploadDestAddress;
+	}
+
+	public KindleAddrType getAddrType() {
+		return addrType;
+	}
+
+	public void setAddrType(KindleAddrType addrType) {
+		this.addrType = addrType;
 	}
 
 	@Override
