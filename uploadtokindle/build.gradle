@@ -28,14 +28,13 @@ buildscript {
         }
     }
 
-    // TODO: use declared above version string i.e. $slim3Version, $gaeVersion
+    // TODO: use declared above version string i.e. $slim3Version
     dependencies {
-        classpath 'bmuschko:gradle-gae-plugin:0.6'
+        classpath 'bmuschko:gradle-gae-plugin:0.7.2'
         classpath ('org.slim3:slim3-gen:1.0.15') {
             exclude group: 'org.apache.ant', module: 'ant'
             exclude group: 'com.sun', module: 'tools'
         }
-        classpath "com.google.appengine:appengine-tools-sdk:1.6.4"
     }
 }
 
@@ -52,8 +51,8 @@ dependencies {
     compile ("org.slim3:slim3:$slim3Version") {
         exclude group: 'com.google.appengine', module: 'appengine-api-1.0-sdk'
     }
-    compile 'org.twitter4j:twitter4j-core:2.2.5'
     compile 'commons-lang:commons-lang:2.6'
+	compile 'commons-io:commons-io:2.3'
 
     testCompile 'org.mockito:mockito-core:1.9.0'
     testCompile 'junit:junit:4.10'
@@ -76,9 +75,11 @@ gae {
         email = 'murai.ry@gmail.com'
         passIn = true
     }
+	
+	stopKey = 'hoge'
+	daemon = true
     
     downloadSdk = true
-    System.properties['appengine.sdk.root'] = gaeDownloadSdk.explodedSdkDirectory.getPath() + File.separator + "appengine-java-sdk-$gaeVersion"
 }
 
 task copySlim3Libs(type: Copy) {
