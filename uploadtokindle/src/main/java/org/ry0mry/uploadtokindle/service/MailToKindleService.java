@@ -2,6 +2,11 @@ package org.ry0mry.uploadtokindle.service;
 
 import java.io.IOException;
 
+import org.ry0mry.uploadtokindle.exception.ErrorConsts;
+import org.ry0mry.uploadtokindle.exception.Upload2KindleException;
+import org.ry0mry.uploadtokindle.model.UploadDocument;
+import org.ry0mry.uploadtokindle.model.UploadUser;
+
 import com.google.appengine.api.mail.MailService;
 import com.google.appengine.api.mail.MailServiceFactory;
 
@@ -23,5 +28,22 @@ public class MailToKindleService {
 		message.setAttachments(new MailService.Attachment(fileName, document));
 		
 		this.mailService.send(message);
+	}
+
+	public void send(UploadUser uploadUser, UploadDocument document) throws Upload2KindleException {
+		String subject = document.getUploadSpec().isConvertSpec() ? "convert" : "";
+		MailService.Message message = 
+				new MailService.Message(
+						uploadUser.getUser().getEmail(),
+						uploadUser.getUploadDestAddress(),
+						subject,
+						"");
+		message.setAttachments(new MailService.Attachment(document.getUploadSpec().getFileNameSpec(), document.getContent()));
+		
+		try {
+			this.mailService.send(message);
+		} catch (IOException e) {
+			throw new Upload2KindleException(e, ErrorConsts.ERR_SENDMAIL);
+		}
 	}
 }
