@@ -46,5 +46,4 @@ public class DownloadService {
 			throw new IOException(""+statusCode);
 		}
 	}
-
 }

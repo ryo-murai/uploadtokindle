@@ -79,6 +79,10 @@ public class UploadUser implements Serializable {
         this.version = version;
     }
 
+    /**
+     * get the google user
+     * @return
+     */
     public User getUser() {
 		return user;
 	}

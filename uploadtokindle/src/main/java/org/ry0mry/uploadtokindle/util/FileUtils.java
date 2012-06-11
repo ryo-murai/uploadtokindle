@@ -5,6 +5,11 @@ import java.util.List;
 import com.google.appengine.api.urlfetch.HTTPHeader;
 
 public class FileUtils {
+	/**
+	 * extract file name from url
+	 * @param url
+	 * @return file name
+	 */
 	public static String toFileName(String url) {
 		String noParamUrl = url.replaceFirst("\\?.*", "");
 		String [] split = noParamUrl.split("/");
