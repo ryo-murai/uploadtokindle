@@ -31,13 +31,12 @@ public class MailToKindleService {
 	}
 
 	public void send(UploadUser uploadUser, UploadDocument document) throws Upload2KindleException {
+		String sender = uploadUser.getUser().getEmail();
+		String to = uploadUser.getCompleteAddress();
 		String subject = document.getUploadSpec().isConvertSpec() ? "convert" : "";
+		String body = "";
 		MailService.Message message = 
-				new MailService.Message(
-						uploadUser.getUser().getEmail(),
-						uploadUser.getUploadDestAddress(),
-						subject,
-						"");
+				new MailService.Message(sender, to, subject, body);
 		message.setAttachments(new MailService.Attachment(document.getUploadSpec().getFileNameSpec(), document.getContent()));
 		
 		try {

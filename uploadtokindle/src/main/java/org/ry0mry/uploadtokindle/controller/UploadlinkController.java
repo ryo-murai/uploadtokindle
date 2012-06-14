@@ -1,7 +1,9 @@
 package org.ry0mry.uploadtokindle.controller;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.ry0mry.uploadtokindle.dataaccess.UploadUserDao;
 import org.ry0mry.uploadtokindle.exception.Upload2KindleException;
 import org.ry0mry.uploadtokindle.model.UploadDocument;
 import org.ry0mry.uploadtokindle.model.UploadSpec;
@@ -17,28 +19,35 @@ import org.slim3.util.BeanUtil;
 import com.google.appengine.api.urlfetch.FetchOptions;
 import com.google.appengine.api.urlfetch.URLFetchService;
 import com.google.appengine.api.urlfetch.URLFetchServiceFactory;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserService;
+import com.google.appengine.api.users.UserServiceFactory;
 
 public class UploadlinkController extends Controller {
 	
 	private static final Logger logger = Logger.getLogger(UploadlinkController.class.getName());
 	
-	private final URLFetchService fetchService;
-
 	private final MailToKindleService kindleMailer;
 	
-	private UrlFetcherService urlFetcher = new UrlFetcherService();
+	private final UrlFetcherService urlFetcher;
+	
+	private UploadUserDao uploadUserDao = new UploadUserDao();
+	
+	private UserService userService = UserServiceFactory.getUserService();
 	
     public UploadlinkController() {
-    	this(URLFetchServiceFactory.getURLFetchService(), new MailToKindleService());
+    	this(new UrlFetcherService(), new MailToKindleService());
     }
 
-    public UploadlinkController(URLFetchService fetchService, MailToKindleService mailKindleService) {
-		this.fetchService = fetchService;
+    public UploadlinkController(UrlFetcherService fetchService, MailToKindleService mailKindleService) {
+		this.urlFetcher = fetchService;
 		this.kindleMailer = mailKindleService;
 	}
 
 	@Override
     public Navigation run() throws Exception {
+		User user = this.userService.getCurrentUser();
+		
 		UploadLinkDto dto = new UploadLinkDto();
 		BeanUtil.copy(request, dto);
 
@@ -48,8 +57,7 @@ public class UploadlinkController extends Controller {
 			return promptUploadSpec(dto, null);
 		}
 
-		UploadUser uploadUser = null; //this.uploadUserDao;
-
+		UploadUser uploadUser = this.uploadUserDao.getUploadUser(user);
 		
 		UploadSpec uploadSpec = this.urlFetcher.decideUploadSpec(dto);
 		if(uploadSpec.getExtSpec()==UploadSpec.Ext.UNKNOWN) {
@@ -63,7 +71,8 @@ public class UploadlinkController extends Controller {
 			// TODO: parameterize some info ...
 			return forward("success.jsp");
 		} catch(Upload2KindleException e){
-			requestScope("error", e);
+			logger.log(Level.SEVERE, "", e);
+			requestScope("throwable", e);
 			return redirect("errors");
 		}
     }

@@ -40,7 +40,7 @@ public class UrlFetcherService {
     		return null;
     	}
 
-    	String fileName = dto.getFileNameSpec();
+    	String fileName = dto.getFileName();
     	if(fileName==null) {
     		fileName = FileUtils.toFileName(dto.getUrl());
     	}
@@ -48,9 +48,9 @@ public class UrlFetcherService {
     		fileName = "document";
     	}
     	
-    	UploadSpec.Ext ext = UploadSpec.getExtFromString(dto.getExtSpec()!=null ? dto.getExtSpec() : FilenameUtils.getExtension(fileName));
+    	UploadSpec.Ext ext = UploadSpec.getExtFromString(dto.getFileExt()!=null ? dto.getFileExt() : FilenameUtils.getExtension(fileName));
 
-    	return new UploadSpec(fileName, ext, dto.isConvert());
+    	return new UploadSpec(fileName, ext, dto.isConvertInPrimitive());
 	}
 	
 	public UploadDocument download(String url, UploadSpec uploadSpec) throws Upload2KindleException {
@@ -59,9 +59,10 @@ public class UrlFetcherService {
 
 		if(statusCode==HttpServletResponse.SC_OK) {
 			if(uploadSpec.getExtSpec()==UploadSpec.Ext.AUTO) {
-				String finalUrl = FileUtils.toFileName(fetchResp.getFinalUrl().toString());
+				URL finalUrls = fetchResp.getFinalUrl();
+				String finalFileName = finalUrls != null ? FileUtils.toFileName(fetchResp.getFinalUrl().toString()) : uploadSpec.getFileNameSpec();
 				String mediaType = FileUtils.getContentType(fetchResp.getHeaders());
-				uploadSpec = uploadSpec.applyFetchResponse(finalUrl, mediaType);
+				uploadSpec = uploadSpec.applyFetchResponse(finalFileName, mediaType);
 			}
 
 			return new UploadDocument(uploadSpec, fetchResp.getContent());

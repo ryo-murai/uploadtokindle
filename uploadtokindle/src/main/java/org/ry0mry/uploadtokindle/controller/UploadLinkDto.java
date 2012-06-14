@@ -6,9 +6,9 @@ import org.ry0mry.uploadtokindle.util.FileUtils;
 
 public class UploadLinkDto {
 	private String url;
-	private String fileNameSpec;
-	private String extSpec;
-	private Boolean convertSpec;
+	private String fileName;
+	private String fileExt;
+	private Boolean convert;
 
 	public String getUrl() {
 		return url;
@@ -16,26 +16,26 @@ public class UploadLinkDto {
 	public void setUrl(String url) {
 		this.url = url;
 	}
-	public String getFileNameSpec() {
-		return fileNameSpec;
+	public String getFileName() {
+		return fileName;
 	}
-	public void setFileNameSpec(String fileNameSpec) {
-		this.fileNameSpec = fileNameSpec;
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
-	public String getExtSpec() {
-		return extSpec;
+	public String getFileExt() {
+		return fileExt;
 	}
-	public void setExtSpec(String extSpec) {
-		this.extSpec = extSpec;
+	public void setFileExt(String fileExt) {
+		this.fileExt = fileExt;
 	}
-	public Boolean isConvertSpec() {
-		return convertSpec;
+	public Boolean getConvert() {
+		return convert;
 	}
-	public boolean isConvert() {
-		return convertSpec!=null && convertSpec.booleanValue();
+	public void setConvert(Boolean convert) {
+		this.convert = convert;
 	}
-	public void setConvertSpec(Boolean convertSpec) {
-		this.convertSpec = convertSpec;
+	public boolean isConvertInPrimitive() {
+		return convert!=null && convert.booleanValue();
 	}
 	
 	public UploadSpec getUploadSpec() {
@@ -43,9 +43,7 @@ public class UploadLinkDto {
     		return null;
     	}
 
-    	boolean convert = convertSpec!=null && convertSpec.booleanValue();
-
-    	String fileName = this.fileNameSpec;
+    	String fileName = this.fileName;
     	if(fileName==null) {
     		fileName = FileUtils.toFileName(url);
     	}
@@ -53,8 +51,8 @@ public class UploadLinkDto {
     		fileName = "document";
     	}
     	
-    	UploadSpec.Ext ext = UploadSpec.getExtFromString(extSpec!=null ? extSpec : FilenameUtils.getExtension(fileName));
+    	UploadSpec.Ext ext = UploadSpec.getExtFromString(fileExt!=null ? fileExt : FilenameUtils.getExtension(fileName));
 
-    	return new UploadSpec(fileName, ext, convert);
+    	return new UploadSpec(fileName, ext, isConvertInPrimitive());
 	}
 }

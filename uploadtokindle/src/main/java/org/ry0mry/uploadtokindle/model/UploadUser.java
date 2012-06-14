@@ -106,6 +106,10 @@ public class UploadUser implements Serializable {
 	public void setAddrType(KindleAddrType addrType) {
 		this.addrType = addrType;
 	}
+	
+	public String getCompleteAddress() {
+		return this.addrType.getActualEmailAddress(this.uploadDestAddress);
+	}
 
 	@Override
     public int hashCode() {
