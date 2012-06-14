@@ -22,14 +22,9 @@ public class UploadlinkController extends Controller {
 	
 	private static final Logger logger = Logger.getLogger(UploadlinkController.class.getName());
 	
-	private static final FetchOptions options = FetchOptions.Builder.withDeadline(10.0); 
-
 	private final URLFetchService fetchService;
 
 	private final MailToKindleService kindleMailer;
-
-	// TODO: mockable
-	private DownloadService downloadService = new DownloadService();
 	
 	private UrlFetcherService urlFetcher = new UrlFetcherService();
 	
@@ -47,10 +42,10 @@ public class UploadlinkController extends Controller {
 		UploadLinkDto dto = new UploadLinkDto();
 		BeanUtil.copy(request, dto);
 
-		// validate url
+		// validate
 		Validators v = new Validators(request);
 		if(!v.add("url", v.required(), URLValidator.INSTANCE).validate()) {
-			return forward("");	// TODO:
+			return promptUploadSpec(dto, null);
 		}
 
 		UploadUser uploadUser = null; //this.uploadUserDao;
@@ -63,7 +58,7 @@ public class UploadlinkController extends Controller {
 		}
 
 		try {
-			UploadDocument document = this.urlFetcher.download(uploadSpec);
+			UploadDocument document = this.urlFetcher.download(dto.getUrl(), uploadSpec);
 			this.kindleMailer.send(uploadUser, document);
 			// TODO: parameterize some info ...
 			return forward("success.jsp");

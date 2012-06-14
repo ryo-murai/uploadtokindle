@@ -31,6 +31,9 @@ public class UploadLinkDto {
 	public Boolean isConvertSpec() {
 		return convertSpec;
 	}
+	public boolean isConvert() {
+		return convertSpec!=null && convertSpec.booleanValue();
+	}
 	public void setConvertSpec(Boolean convertSpec) {
 		this.convertSpec = convertSpec;
 	}
