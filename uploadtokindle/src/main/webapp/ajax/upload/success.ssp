@@ -1,0 +1,7 @@
+<%@ var fileName: String %>
+<div class="alert alert-success">
+  <a class="close" data-dismiss="alert" href="#"><i class="icon-remove-sign"></i></a>
+  your document ${fileName} has successfully been sent.
+  check your kindle personal document library <strong>later</strong>. 
+  it takes a few minutes to be filed in your library.
+</div>

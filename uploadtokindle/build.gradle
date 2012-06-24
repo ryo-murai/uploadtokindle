@@ -1,9 +1,15 @@
+import java.io.File;
+import java.util.List;
+
+import org.gradle.api.file.FileCollection;
+
 /**
  * build.gradle declares basic dependencies
  */
 apply plugin: 'java'
 apply plugin: 'scala'
 apply plugin: 'gae'
+apply plugin: 'scalate'
 
 def javaCompatilibity = 1.6
 sourceCompatibility = javaCompatilibity
@@ -24,6 +30,9 @@ buildscript {
     repositories {
         mavenCentral()
         mavenRepo(url: 'http://maven.seasar.org/maven2/')
+		ivy {
+			url new File(System.getProperty('user.home'), 'localrepository').absolutePath
+		}
         add(new org.apache.ivy.plugins.resolver.URLResolver()) {
             name = 'GitHub'
             addArtifactPattern 'http://cloud.github.com/downloads/[organisation]/[module]/[module]-[revision].[ext]'
@@ -33,6 +42,7 @@ buildscript {
     // TODO: use declared above version string i.e. $slim3Version
     dependencies {
         classpath 'bmuschko:gradle-gae-plugin:0.7.2'
+        classpath 'murtools:gradle-scalate-plugin:0.0.1'
         classpath ('org.slim3:slim3-gen:1.0.15') {
             exclude group: 'org.apache.ant', module: 'ant'
             exclude group: 'com.sun', module: 'tools'
@@ -56,13 +66,14 @@ dependencies {
     compile 'commons-lang:commons-lang:2.6'
 	compile 'commons-io:commons-io:2.3'
 
+	// Libraries needed for scala api
+	compile "org.scala-lang:scala-library:$scalaVersion"
+	compile 'org.fusesource.scalate:scalate-core:1.5.3'
+	
 	// Libraries needed to run the scala tools
 	scalaTools "org.scala-lang:scala-compiler:$scalaVersion"
 	scalaTools "org.scala-lang:scala-library:$scalaVersion"
 
-	// Libraries needed for scala api
-	compile "org.scala-lang:scala-library:$scalaVersion"
-	
     testCompile 'org.mockito:mockito-core:1.9.0'
     testCompile 'junit:junit:4.10'
     testCompile "com.google.appengine:appengine-api-stubs:$gaeVersion"
@@ -89,6 +100,12 @@ gae {
 	jvmFlags = ['-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=9888']
 	
     downloadSdk = true
+}
+
+scalatePreCompile {
+	templateSrcDir = file('src/main/webapp/ajax/upload')
+	workingDirectory = file('build/scalate/src_gen')
+	targetDirectory = file('build/classes')
 }
 
 task copySlim3Libs(type: Copy) {
